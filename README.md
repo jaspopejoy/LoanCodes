@@ -1,2 +1,2 @@
-# jsSiteTemplate
-Site Template for JS Projects
+# Mortgage Loan calculator
+simple loan calculator
