@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #1d5888;
+    --primary-color: #2c70a8;
     --secondary-color: #ff993b;
     --dark-color: #000000;
     --white-color: #e7e7e7;
@@ -18,13 +18,11 @@ footer {
     padding-right: 1rem;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1{
     color: var(--primary-color);
+}
+thead.table {
+    background-color: var(--primary-color);
 }
 
 footer .social>a {
