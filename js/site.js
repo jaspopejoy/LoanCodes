@@ -37,7 +37,7 @@ function calculateMortgage(loanAmt, termMonths, interestRate) {
     let loanObj = {};
 
     //calculate monthly payment
-    let monthlyPymt = (loanAmt) * (interestRate / 1200) / (1 - (1 + interestRate / 1200) ** (-termMonths));
+    let monthlyPymt = ( (loanAmt) * (interestRate / 1200) ) / (1 - (1 + interestRate / 1200) ** (-termMonths));
 
     //calculate total cost
     let totalCost = (monthlyPymt * termMonths);
@@ -93,7 +93,7 @@ function displayloanData(loanObj) {
 function displayTable(loanObj) {
 
     //assign variables
-    let monthlyInterest;
+    let monthlyInterest=0;
 
     //get the table body element from the page
     let tableBody = document.getElementById("results");
@@ -105,7 +105,7 @@ function displayTable(loanObj) {
     tableBody.innerHTML = "";
 
     // loop through the values and add to creaed table
-    for (let i = 0; i <= termMonths; i++) {
+    for (let i = 1; i <= loanObj.termMonths; i++) {
 
         let tableRow = document.importNode(templateRow.content,true);
 
@@ -121,19 +121,39 @@ function displayTable(loanObj) {
         rowCols[0].textContent = i;
       
         rowCols[1].classList.add(loanObj.monthlyPymt);
-        rowCols[1].textContent = loanObj.monthlyPymt;
+        rowCols[1].textContent = loanObj.monthlyPymt.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        });
 
         rowCols[2].classList.add(monthlyPrincipal);
-        rowCols[2].textContent = monthlyPrincipal;
+        rowCols[2].textContent = monthlyPrincipal.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        });
 
         rowCols[3].classList.add(interestPymt);
-        rowCols[3].textContent = interestPymt;
+        rowCols[3].textContent = interestPymt.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        });
 
         rowCols[4].classList.add(monthlyInterest);
-        rowCols[4].textContent = monthlyInterest;
+        rowCols[4].textContent = monthlyInterest.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        });
 
-        rowCols[5].classList.add(loanObj.loanAmt);
-        rowCols[5].textContent = loanObj.loanAmt;
+        rowCols[5].classList.add(balance);
+        rowCols[5].textContent = balance.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        });
         
         tableBody.appendChild(tableRow);
 
