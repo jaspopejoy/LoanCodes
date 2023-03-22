@@ -109,7 +109,7 @@ function displayTable(loanObj) {
 
         let tableRow = document.importNode(templateRow.content,true);
 
-        let interestPymt = loanObj.lonaAmt * (loanObj.interestRate/1200);
+        let interestPymt = loanObj.loanAmt * (loanObj.interestRate/1200);
         monthlyInterest += interestPymt;
         let monthlyPrincipal = loanObj.monthlyPymt - interestPymt;
         let balance = loanObj.loanAmt - monthlyPrincipal;
