@@ -35,13 +35,13 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link"" href="/index.html">Home</a>
+                        <a class="nav-link"" href=" /index.html">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/app.html">The App</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page"href="/code.html">The Code</a>
+                        <a class="nav-link active" aria-current="page" href="/code.html">The Code</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" target="_blank" href="https://github.com/jaspopejoy/loancodes">Git Repo</a>
@@ -56,22 +56,185 @@
 
     <!-- Main Section -->
     <main class="flex-shrink-0">
-        <div class="container py-5 px-5 mt-5">
-            <h2 class="border-1 border-bottom border-dark">The Code for LOANCODES.</h2>
+        <div class="container py-5 px-5">
+            <h2 class="border-1 border-bottom border-dark mt-5">The Code for LOANCODES.</h2>
             <div class="row row-cols-1 row-cols-lg-2">
                 <div class="col-lg-8">
                     <pre class="line-numbers"><code class="language-javascript">
-                        // Call Hello World
-                        function helloworld{
-                            alert("hello world");
+                      
+                        //get the values from the interface
+                        //start or controller function
+                        function getValues() {
+                            //get user values from the document
+                            let loanAmount = document.getElementById("loanAmt").value;
+                            let numberOfPayments = document.getElementById("numPayments").value;
+                            let interestRate = document.getElementById("interestRate").value;
+
+                            //parse numbers
+                            loanAmount = parseInt(loanAmount);
+                            numberOfPayments = parseInt(numberOfPayments);
+                            interestRate = parseInt(interestRate);
+
+                            //check to make sure they are integers
+                            if (Number.isInteger(loanAmount) && Number.isInteger(numberOfPayments) && Number.isInteger(interestRate)) {
+
+                                //call calculateValues
+                                let loanArray = calculateValues(loanAmount, numberOfPayments, interestRate);
+
+                                //call displayResults
+                                displayResults(loanArray);
+
+                            } else {
+                                alert("You must enter valid numbers");
+                            }
+                        }
+
+                        //logic function(s)
+                        //calculate the loan amt, loan term, and interest rate
+                        function calculateValues(loanAmount, numberOfPayments, interestRate) {
+
+                            //assign variables and set array
+                            let returnArray = [];
+                            let remainingBalance = loanAmount;
+                            let totalInterestPaid = 0;
+
+                            //loop through the values and push to returnArray
+                            for (let i = 1; i <= numberOfPayments; i++) {
+                                returnArray.push(i);
+
+                                //calculate monthly payments
+                                let monthlyPayment = (loanAmount * ((interestRate / 1200) / (1 - Math.pow(1 + (interestRate / 1200), (numberOfPayments * -1)))));
+                                returnArray.push(monthlyPayment);
+
+                                //calculate interest paid and principal paid and push into array
+                                let interestPaid = remainingBalance * (interestRate / 1200);
+                                let principalPaid = monthlyPayment - interestPaid
+                                returnArray.push(principalPaid);
+                                returnArray.push(interestPaid);
+
+                                //calculate total interest paid and push to array
+                                totalInterestPaid += interestPaid;
+                                returnArray.push(totalInterestPaid);
+
+                                //calculate balance and push to array
+                                remainingBalance -= principalPaid;
+                                returnArray.push(remainingBalance);
+                            }
+
+                            //print monthly payment to the display
+                            document.getElementById("monthlyPayment").classList.add("output-payment");
+                            document.getElementById("monthlyPayment").innerHTML = `${returnArray[1].toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                minimumFractionDigits: 2
+                            })}`;
+
+                            //print total principal to the display
+                            document.getElementById("totalPrincipal").innerHTML = `${loanAmount.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                minimumFractionDigits: 2
+                            })}`;
+
+                            //print total interest to the display
+                            document.getElementById("totalInterest").innerHTML = `${totalInterestPaid.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                minimumFractionDigits: 2
+                            })}`;
+                            
+                            //calculate total cost
+                            let totalCost = totalInterestPaid + loanAmount;
+
+                            //print total cost to the screen
+                            document.getElementById("totalCost").innerHTML = `${totalCost.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                minimumFractionDigits: 2
+                            })}`;
+
+                            return returnArray;
+                        }
+
+                        //display amortization table
+                        function displayResults(loanArray) {
+
+                            //get the tale body element from the page
+                            let tableBody = document.getElementById("results");
+
+                            //get the template row
+                            let templateRow = document.getElementById("dataTemplate");
+
+                            //clear the table first
+                            tableBody.innerHTML = "";
+
+                            // loop through and add values to the created table
+                            for (let index = 0; index < loanArray.length; index += 6) {
+
+                                let tableRow = document.importNode(templateRow.content, true);
+
+                                //grabs the tds to put into array
+                                let rowCols = tableRow.querySelectorAll("td");
+
+                                rowCols[0].textContent = loanArray[index];
+                                rowCols[1].textContent = loanArray[index + 1].toLocaleString('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 2
+                                });
+
+                                rowCols[2].textContent = loanArray[index + 2].toLocaleString('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 2
+                                });
+
+                                rowCols[3].textContent = loanArray[index + 3].toLocaleString('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 2
+                                });
+
+                                rowCols[4].textContent = loanArray[index + 4].toLocaleString('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 2
+                                });
+
+                                rowCols[5].textContent = loanArray[index + 5].toLocaleString('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 2
+                                });
+
+                                tableBody.appendChild(tableRow);
+                            }
                         }
                     </code>
                     </pre>
                 </div>
                 <div class="col-lg-4">
-                    <p>The Code is structured in one function.</p>
-                    <h5>Hello World</h5>
-                    <p>Hello World is a function that displays a message of "Hello World".</p>
+                    <p>The Code is structured in three function.</p>
+                    <h5>getValues()</h5>
+                    <p>The <strong>getValues</strong> function declares variables to hold the user entered data from the
+                        page's form.
+                        It then validates these values by parsing them to see if they are a valid number. If they are
+                        not, an alert is shown to the user. If the values are valid they are passed to the
+                        <strong>calculateValues()</strong> function. The array returned from this function is then
+                        passed to the <strong>displayResults()</strong> function.
+                    </p>
+                    <h5>calculateValues()</h5>
+                    <p>The <strong>calculateValues()</strong> function declares variables and tracks the remaining
+                        balance and interest paid. It loops through the number of payments entered by the user and
+                        calculates the monthly payment. It also updates the interest and principal paid and stores them
+                        in an array. The function then takes these values and updates the document. Finally the function
+                        returns the array with the stored data to the getValues() array.</p>
+                    <h5>displayResults()</h5>
+                    <p>The <strong>displayResults()</strong> function recieves the array of values from the
+                        <strong>calculateValues()</strong> function and enters them into a table. It retrieves the table
+                        template from the document and loops through the array several times, inserting values into
+                        snippets and appends them to the table body.
+                    </p>
                 </div>
             </div>
         </div>
@@ -89,12 +252,14 @@
                 </div>
                 <div class="col d-flex align-items-center justify-content-start justify-content-lg-end">
                     <div class="row">
-                        <div class="col social"><a href="https://www.linkedin.com/in/jason-popejoy/" target="_blank"><i class="fab fa-linkedin fa-2x"></i></a>
+                        <div class="col social"><a href="https://www.linkedin.com/in/jason-popejoy/" target="_blank"><i
+                                    class="fab fa-linkedin fa-2x"></i></a>
                         </div>
                         <div class="col social"><a href="https://twitter.com/jaspopejoy" target="_blank"><i
-                            class="fab fa-twitter fa-2x"></i></a>
+                                    class="fab fa-twitter fa-2x"></i></a>
                         </div>
-                        <div class="col social"><a href="https://github.com/jaspopejoy" target="_blank"><i class="fab fa-github fa-2x"></i></a>
+                        <div class="col social"><a href="https://github.com/jaspopejoy" target="_blank"><i
+                                    class="fab fa-github fa-2x"></i></a>
                         </div>
                     </div>
                 </div>

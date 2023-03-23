@@ -71,8 +71,8 @@
                                     aria-label="enter loan amount">
                             </div>
                             <div class="col p-3">
-                                <label for="termMonths" class="form-label">term (months)</label>
-                                <input type="text" id="termMonths" class="form-control"
+                                <label for="numPayments" class="form-label">term (months)</label>
+                                <input type="text" id="numPayments" class="form-control"
                                     placeholder="enter term (months)" aria-label="enter term (months)">
                             </div>
                             <div class="col p-3">
@@ -98,22 +98,22 @@
                         </div>
                         <br><br>
                         <div class="row align-text-bottom p-2">
-                        <div class="col-6">
-                            <h5>Total Principal</h5>
-                        </div>
-                        <div id="totalPrincipal" class="col-6 text-end">
-                        </div>
-                        <div class="col-6">
-                            <h5>Total Interest</h5>
-                        </div>
-                        <div id="totalInterest" class="col-6 text-end">
-                        </div>
+                            <div class="col-6">
+                                <h5>Total Principal</h5>
+                            </div>
+                            <div id="totalPrincipal" class="col-6 text-end">
+                            </div>
+                            <div class="col-6">
+                                <h5>Total Interest</h5>
+                            </div>
+                            <div id="totalInterest" class="col-6 text-end">
+                            </div>
 
-                        <div class="col-6">
-                            <h5>Total cost</h5>
-                        </div>
-                        <div id="totalCost" class="col-6 text-end">
-                        </div>
+                            <div class="col-6">
+                                <h5>Total cost</h5>
+                            </div>
+                            <div id="totalCost" class="col-6 text-end">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -121,12 +121,14 @@
             <div class="col-12 table-responsive pt-4">
                 <table class="table table-striped table-bordered text-center">
                     <thead class="table">
-                        <th scope="col">Month</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Principal</th>
-                        <th scope="col">Interest</th>
-                        <th scope="col">Total Interest</th>
-                        <th scope="col">Balance</th>
+                        <tr>
+                            <th scope="col">Month</th>
+                            <th scope="col">Payment</th>
+                            <th scope="col">Principal</th>
+                            <th scope="col">Interest</th>
+                            <th scope="col">Total Interest</th>
+                            <th scope="col">Balance</th>
+                        </tr>
                     </thead>
                     <tbody id="results">
                         <!--Results Go Here-->
