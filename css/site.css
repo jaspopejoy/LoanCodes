@@ -21,7 +21,7 @@ footer {
 h1{
     color: var(--primary-color);
 }
-thead.table {
+thead.tableheader {
     background-color: var(--primary-color);
 }
 

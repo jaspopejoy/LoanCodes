@@ -1,149 +1,79 @@
-
-//get the values from the interface
-//start or controller function
-function getValues() {
-    //get user values from the document
-    let loanAmount = document.getElementById("loanAmt").value;
-    let numberOfPayments = document.getElementById("numPayments").value;
-    let interestRate = document.getElementById("interestRate").value;
-
-    //parse numbers
-    loanAmount = parseInt(loanAmount);
-    numberOfPayments = parseInt(numberOfPayments);
-    interestRate = parseInt(interestRate);
-
-    //check to make sure they are integers
-    if (Number.isInteger(loanAmount) && Number.isInteger(numberOfPayments) && Number.isInteger(interestRate)) {
-
-        //call calculateValues
-        let loanArray = calculateValues(loanAmount, numberOfPayments, interestRate);
-
-        //call displayResults
-        displayResults(loanArray);
-
-    } else {
-        alert("You must enter valid numbers");
-    }
-}
-
-//logic function(s)
-//calculate the loan amt, loan term, and interest rate
-function calculateValues(loanAmount, numberOfPayments, interestRate) {
-
-    //assign variables and set array
-    let returnArray = [];
-    let remainingBalance = loanAmount;
-    let totalInterestPaid = 0;
-
-    //loop through the values and push to returnArray
-    for (let i = 1; i <= numberOfPayments; i++) {
-        returnArray.push(i);
-
-        //calculate monthly payments
-        let monthlyPayment = (loanAmount * ((interestRate / 1200) / (1 - Math.pow(1 + (interestRate / 1200), (numberOfPayments * -1)))));
-        returnArray.push(monthlyPayment);
-
-        //calculate interest paid and principal paid and push into array
-        let interestPaid = remainingBalance * (interestRate / 1200);
-        let principalPaid = monthlyPayment - interestPaid
-        returnArray.push(principalPaid);
-        returnArray.push(interestPaid);
-
-        //calculate total interest paid and push to array
-        totalInterestPaid += interestPaid;
-        returnArray.push(totalInterestPaid);
-
-        //calculate balance and push to array
-        remainingBalance -= principalPaid;
-        returnArray.push(remainingBalance);
-    }
-
-    //print monthly payment to the display
-    document.getElementById("monthlyPayment").classList.add("output-payment");
-    document.getElementById("monthlyPayment").innerHTML = `${returnArray[1].toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-    })}`;
-
-    //print total principal to the display
-    document.getElementById("totalPrincipal").innerHTML = `${loanAmount.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-    })}`;
-
-    //print total interest to the display
-    document.getElementById("totalInterest").innerHTML = `${totalInterestPaid.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-    })}`;
-    
-    //calculate total cost
-    let totalCost = totalInterestPaid + loanAmount;
-
-    //print total cost to the screen
-    document.getElementById("totalCost").innerHTML = `${totalCost.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-    })}`;
-
-    return returnArray;
-}
-
-//display amortization table
-function displayResults(loanArray) {
-
-    //get the tale body element from the page
-    let tableBody = document.getElementById("results");
-
-    //get the template row
-    let templateRow = document.getElementById("dataTemplate");
-
-    //clear the table first
+//Calculate the payment for the loan
+function calcPayment(amount, rate, term) {
+    return (amount * (rate / 1200)) / (1 - Math.pow(1 + rate / 1200, -term));
+  }
+  
+  //calculate the interst for the current balance of the loan
+  function calcInterest(balance, rate) {
+    return balance * (rate / 1200);
+  }
+  
+  //Build the amoritization schedule
+  function buildSchedule() {
+    let amount = document.getElementById("lamount").value;
+    let rate = document.getElementById("lrate").value;
+    let term = document.getElementById("lterm").value;
+  
+    //get the table we are going to add to.
+    let tableBody = document.getElementById("scheduleBody");
+    let template = document.getElementById("scheduleTemplate");
+  
+    //clear the table for previous calculations
     tableBody.innerHTML = "";
-
-    // loop through and add values to the created table
-    for (let index = 0; index < loanArray.length; index += 6) {
-
-        let tableRow = document.importNode(templateRow.content, true);
-
-        //grabs the tds to put into array
-        let rowCols = tableRow.querySelectorAll("td");
-
-        rowCols[0].textContent = loanArray[index];
-        rowCols[1].textContent = loanArray[index + 1].toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        });
-
-        rowCols[2].textContent = loanArray[index + 2].toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        });
-
-        rowCols[3].textContent = loanArray[index + 3].toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        });
-
-        rowCols[4].textContent = loanArray[index + 4].toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        });
-
-        rowCols[5].textContent = loanArray[index + 5].toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        });
-
-        tableBody.appendChild(tableRow);
+  
+    //setup some variables to hold the value in the schedule
+    let payment = calcPayment(amount, rate, term);
+    let balance = amount;
+    let totalInterest = 0;
+    let monthlyPrincipal = 0;
+    let monthlyInterest = 0;
+    let monthlyTotalInterest = 0;
+  
+    //create a loop for each month of the loan term
+    for (month = 1; month <= term; month++) {
+      monthlyInterest = calcInterest(balance, rate);
+      totalInterest += monthlyInterest;
+      monthlyPrincipal = payment - monthlyInterest;
+      balance = balance - monthlyPrincipal;
+  
+      //get a clone row template
+      clone = template.content.cloneNode(true);
+      //grab only the columns in the template
+      columns = clone.querySelectorAll("td");
+  
+      //build the row
+      //we know that there are six columns in our template
+      columns[0].textContent = month;
+      columns[1].textContent = payment.toFixed(2);
+      columns[2].textContent = monthlyPrincipal.toFixed(2);
+      columns[3].textContent = monthlyInterest.toFixed(2);
+      columns[4].textContent = totalInterest.toFixed(2);
+      columns[5].textContent = balance.toFixed(2);
+  
+      //append to the table
+      tableBody.appendChild(clone);
     }
-}
+  
+    //Build out the summary area
+    labelPrincipal = document.getElementById("totalPrincipal");
+    labelPrincipal.innerHTML = Number(amount).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+    labelInterest = document.getElementById("totalInterest");
+    labelInterest.innerHTML = totalInterest.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+    paymentdiv = document.getElementById("payment");
+    paymentdiv.innerHTML = payment.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+    totalCostDiv = document.getElementById("totalCost");
+    let totalCost = Number(amount) + totalInterest;
+    totalCostDiv.innerHTML = Number(totalCost).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+  }
